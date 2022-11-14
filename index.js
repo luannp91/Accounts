@@ -22,7 +22,7 @@ function operation() {
             createAccount()
         }
         else if (action === 'Depositar') {
-            
+            deposit()
         }
         else if (action === 'Consultar Saldo') {
             
@@ -75,4 +75,28 @@ function buildAccount() {
         console.log(chalk.green('Parabéns, a sua conta foi criada!'))
         operation()
     }).catch((err) => console.log(err))
+}
+
+//  Adicionar um depósito na conta do usuário
+function deposit() {
+    inquirer.prompt([
+        {
+            name: 'accountName',
+            message: 'Qual o nome da sua Conta?',
+        },
+    ]).then((answer) => {
+        const accountName = answer['accountName']
+        if (!checkAccount(accountName)) {
+            return deposit()
+        }
+    })
+}
+
+//  Verificar se a conta existe
+function checkAccount (accountName) {
+    if (!fs.existsSync(`accounts/${accountName}.json`)) {
+        console.log(chalk.bgRed.black('Esta conta não existe, escolha outro nome!'))
+        return false
+    }
+    return true
 }
