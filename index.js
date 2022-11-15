@@ -28,7 +28,7 @@ function operation() {
             getAccountBalance()
         }
         else if (action === 'Sacar') {
-            
+            withdraw()
         }
         else if (action === 'Sair') {
             console.log(chalk.bgBlue.black('Obrigado por usar o Accounts!'))
@@ -104,7 +104,7 @@ function deposit() {
 }
 
 //  Verificar se a conta existe
-function checkAccount (accountName) {
+function checkAccount(accountName) {
     if (!fs.existsSync(`accounts/${accountName}.json`)) {
         console.log(chalk.bgRed.black('Esta conta não existe, escolha outro nome!'))
         return false
@@ -121,10 +121,10 @@ function addAmount(accountName, amount) {
         return deposit()
     }
     accountData.balance = parseFloat(amount) + parseFloat(accountData.balance)
-    fs.writeFileSync(`accounts/${accountName}.json`, JSON.stringify(accountData), 
-    function (err) {
-        console.log(err)
-    },)
+    fs.writeFileSync(`accounts/${accountName}.json`, JSON.stringify(accountData),
+        function (err) {
+            console.log(err)
+        },)
     console.log(chalk.green(`Foi depositado o valor de R$${amount} na sua conta!`))
 }
 
@@ -152,5 +152,30 @@ function getAccountBalance() {
         console.log(chalk.bgBlue.black(`Olá, o saldo da sua conta é de R$${accountData.balance}`,)
         )
         operation()
+    }).catch(err => console.log(err))
+}
+
+//  Sacar dinheiro da conta do usuário
+function withdraw() {
+    inquirer.prompt([
+        {
+            name: 'accountName',
+            message: 'Qual o nome da sua conta?',
+        },
+    ]).then((answer) => {
+        const accountName = answer['accountName']
+        if (!checkAccount(accountName)) {
+            return withdraw()
+        }
+        inquirer.prompt([
+            {
+                name: 'amount',
+                message: 'Quanto você deseja sacar?',
+            },
+        ]).then((answer) => {
+            const amount = ['amount']
+            console.log(amount)
+            operation()
+        }).catch(err => console.log(err))
     }).catch(err => console.log(err))
 }
